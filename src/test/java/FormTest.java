@@ -1,4 +1,5 @@
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.Selenide;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
 public class FormTest {
 
@@ -20,14 +22,26 @@ public class FormTest {
         Selenide.open("http://localhost:9999");
         $("[data-test-id=city] input").setValue("Воронеж");
         String planningDate = generateDate(4, "dd.MM.yyyy");
-        $("[data-test-id=date] input" ).sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
         $("[data-test-id=date] input").setValue(planningDate);
         $("[data-test-id=name] input").setValue("Малеев Евгений");
         $("[data-test-id=phone] input").setValue("+79065647109");
         $("[data-test-id=agreement]").click();
         $("button.button").click();
         $(".notification__content").shouldBe(Condition.visible, Duration.ofSeconds(15)).shouldHave(Condition.text("Встреча успешно забронирована на " + planningDate));
+    }
 
-
+    @Test
+    public void sendSuccessForm2() {
+        Selenide.open("http://localhost:9999");
+        $("[data-test-id=city] input").setValue("Во");
+        $$(".menu-item").findBy(Condition.exactText("Воронеж")).click();
+        $("[data-test-id=date] input").click();
+        $$(".calendar__day.calendar__day").findBy(Condition.exactText("13")).click();
+        $("[data-test-id=name] input").setValue("Малеев Евгений");
+        $("[data-test-id=phone] input").setValue("+79065647109");
+        $("[data-test-id=agreement]").click();
+        $("button.button").click();
+        $(".notification__content").shouldBe(Condition.visible, Duration.ofSeconds(15)).shouldHave(Condition.text("Встреча успешно забронирована на 13.11.2024"));
     }
 }
